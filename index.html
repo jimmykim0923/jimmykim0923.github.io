@@ -13,6 +13,8 @@
 </header>
 
 <div class="container">
+  <!-- 사진 업로드를 위한 input 요소 -->
+  <input type="file" id="fileInput" accept="image/*">
   <button class="button" onclick="handleOCR()">사진 업로드</button>
   <button class="button">사용자 사전 등록하기</button>
 </div>
@@ -21,6 +23,8 @@
   <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
   <!-- 예시로 빈 화면을 표시하고 있습니다 -->
   <div id="recognized-text" style="height: 300px;"></div>
+  <!-- 이미지를 표시할 img 요소 -->
+  <img src="" alt="Uploaded Image" id="uploaded-image" style="max-width: 100%; display: none;">
   <button id="check-button">검사하기</button>
   <a href="#" id="download-button">다운로드</a>
 </div>
