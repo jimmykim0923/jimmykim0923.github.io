@@ -2,85 +2,36 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>우리말 분쇄기</title>
-  <style>
-    /* 기존 CSS 스타일 */
-    body {
-      font-family: 'Dokdo', cursive;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5dc; /* 베이지 색상 */
-    }
-    header {
-      background-color: #f0f0f0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      margin-right: 10px;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    /* 추가된 CSS 스타일 */
-    .result-container {
-      border: 1px solid #ccc;
-      width: 70%;
-      margin: 20px auto;
-      padding: 20px;
-      text-align: center;
-      background-color: #fff; /* 텍스트 블록 배경색 */
-    }
-    #check-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      cursor: pointer;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    #download-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      text-decoration: none;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-  </style>
+  <title>OCR 작업</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
 </head>
 <body>
 
-<header>
-  <h1>우리말 분쇄기</h1>
-  <h2>경성고가 만든 형태소 분석기</h2>
-</header>
+<input type="file" id="fileInput" />
+<button onclick="handleOCR()">OCR 작업 실행</button>
 
-<div class="container">
-  <button class="button">사진 업로드</button>
-  <button class="button">사용자 사전 등록하기</button>
-</div>
+<script>
+  document.getElementById('fileInput').addEventListener('change', handleFileSelect);
 
-<div class="result-container">
-  <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
-  <!-- 예시로 빈 화면을 표시하고 있습니다 -->
-  <div id="recognized-text" style="height: 300px;"></div>
-  <button id="check-button">검사하기</button>
-  <a href="#" id="download-button">다운로드</a>
-</div>
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    // 이미지 파일을 처리하는 코드
+    // Tesseract.js를 이용하여 OCR 작업 실행
+    Tesseract.recognize(
+      file,
+      'kor', // 언어 설정 (한국어: 'kor')
+      { logger: m => console.log(m) } // 로그 출력 설정
+    ).then(({ data: { text } }) => {
+      console.log('인식된 텍스트:', text);
+      // 여기서 텍스트를 가지고 원하는 작업을 수행할 수 있어요.
+      // 예를 들어, 추출된 텍스트를 웹 페이지에 표시하거나 다른 동작을 수행할 수 있습니다.
+    });
+  }
+
+  function handleOCR() {
+    document.getElementById('fileInput').click();
+  }
+</script>
 
 </body>
 </html>
