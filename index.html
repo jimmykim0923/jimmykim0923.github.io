@@ -1,33 +1,63 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>우리말 분쇄기</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Dokdo 폰트는 추가해야 합니다 -->
+ <title>우리말 분쇄기</title>
+ <style>
+ /* 제목 스타일 */
+ h1 {
+ font-size: 24px;
+ margin-top: 20px;
+ margin-bottom: 10px;
+ }
+
+ /* 부제 스타일 */
+ h2 {
+ font-size: 16px;
+ margin-top: 0;
+ }
+
+ /* 버튼 스타일 */
+ .button {
+ padding: 10px;
+ background-color: #4CAF50;
+ color: white;
+ border: none;
+ text-align: center;
+ display: inline-block;
+ cursor: pointer;
+ font-size: 16px;
+ margin: 10px;
+ }
+
+ /* 흰 화면 스타일 */
+ .content {
+ background-color: white;
+ width: 500px;
+ height: 300px;
+ margin: 20px;
+ padding: 10px;
+ }
+
+ /* 오른쪽 끝 버튼 스타일 */
+ .right-button {
+ float: right;
+ }
+ </style>
 </head>
 <body>
-  <div class="container">
-    <div class="top-left">
-      <h1>우리말 분쇄기</h1>
-      <h2>경성고가 만든 형태소 분석기</h2>
-    </div>
-    <div class="top-right">
-      <button class="oval-button">검사하기</button>
-    </div>
-    <div class="middle-right">
-      <div class="text-area">
-      <div class="text-area GapViewItemselected" contenteditable="true">
-        안녕하십니까? 저희는 경성고 학생들입니다-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- </div>
-    </div>
-    </div>
-    <div class="bottom-left">
-      <h3 class="" contenteditable="true">사용자 사전 등록</h3>
-      <h2>문서 업로드</h2>
-    </div>
-    <div class="bottom-right">
-      <button class="rounded-rectangle-button">다운하기</button>
-    </div>
-  </div>
+ <h1>우리말 분쇄기</h1>
+ <h2>경성고가 만든 형태소 분석기</h2>
+
+ <div>
+ <button class="button">검사하기</button>
+ </div>
+
+ <div class="content"></div>
+
+ <div>
+ <button class="button">문서 업로드</button>
+ <button class="button">사용자 사전 등록하기</button>
+ <button class="button right-button">다운하기</button>
+ </div>
 </body>
 </html>
