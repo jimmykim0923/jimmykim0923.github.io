@@ -96,7 +96,8 @@
         { logger: m => console.log(m) }
       );
       console.log('인식된 텍스트:', text);
-      document.getElementById('recognized-text').innerText = text;
+      // 텍스트를 .result-container에 추가
+      document.querySelector('.result-container').innerHTML = `<p>${text}</p>`;
     });
     fileInput.click();
   }
