@@ -3,64 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>우리말 분쇄기</title>
-  <style>
-    /* 기존 CSS 스타일 */
-    body {
-      font-family: 'Dokdo', cursive;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5dc; /* 베이지 색상 */
-    }
-    header {
-      background-color: #f0f0f0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      margin-right: 10px;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    /* 추가된 CSS 스타일 */
-    .result-container {
-      border: 1px solid #ccc;
-      width: 70%;
-      margin: 20px auto;
-      padding: 20px;
-      text-align: center;
-      background-color: #fff; /* 텍스트 블록 배경색 */
-    }
-    #check-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      cursor: pointer;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    #download-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      text-decoration: none;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -82,27 +25,6 @@
   <a href="#" id="download-button">다운로드</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
-<script>
-  function handleOCR() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      const { data: { text } } = await Tesseract.recognize(
-        file,
-        'kor',
-        { logger: m => console.log(m) }
-      );
-      console.log('인식된 텍스트:', text);
-      // 텍스트를 .result-container에 추가
-      document.querySelector('.result-container').innerHTML = `<p>${text}</p>`;
-    });
-    fileInput.click();
-  }
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
-
