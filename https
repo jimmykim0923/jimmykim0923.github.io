@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>우리말 분쇄기</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Dokdo 폰트는 추가해야 합니다 -->
+</head>
+<body>
+  <div class="container">
+    <div class="top-left">
+      <h1>우리말 분쇄기</h1>
+      <h2>경성고가 만든 형태소 분석기</h2>
+    </div>
+    <div class="top-right">
+      <button class="oval-button">검사하기</button>
+    </div>
+    <div class="middle-right">
+      <div class="text-area">
+      <div class="text-area GapViewItemselected" contenteditable="true">
+        안녕하십니까? 저희는 경성고 학생들입니다-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- </div>
+    </div>
+    </div>
+    <div class="bottom-left">
+      <h3 class="" contenteditable="true">사용자 사전 등록</h3>
+      <h2>문서 업로드</h2>
+    </div>
+    <div class="bottom-right">
+      <button class="rounded-rectangle-button">다운하기</button>
+    </div>
+  </div>
+</body>
+</html>
