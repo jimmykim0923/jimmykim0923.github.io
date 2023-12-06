@@ -106,7 +106,7 @@
 
   // 텍스트를 형태소 분석하는 함수
   async function analyzeText() {
-    const text = document.querySelector('#recognized-text').innerText;
+    document.querySelector('#recognized-text').innerHTML = text;
     const kiwi = new Kiwi();
     
     // kiwipiepy로 형태소 분석
