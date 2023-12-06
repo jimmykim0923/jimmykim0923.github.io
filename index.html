@@ -84,7 +84,9 @@
 <div class="result-container">
   <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
   <!-- 예시로 빈 화면을 표시하고 있습니다 -->
-  <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
+  <input type="file" id="fileInput" style="display: none;">
+  <label for="fileInput" class="button">사진 업로드</label>
+  <img id="uploaded-image" alt="Uploaded Image">
   <div id="recognized-text" style="height: 300px;"></div>
   <button id="check-button">검사하기</button>
   <a href="#" id="download-button">다운로드</a>
@@ -94,7 +96,7 @@
 <script src="https://cdn.jsdelivr.net/npm/kiwipiepy"></script>
 <script>
   function handleOCR() {
-    const fileInput = document.createElement('input');
+    const fileInput = document.querySelector('#fileInput');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.addEventListener('change', async (event) => {
@@ -104,7 +106,6 @@
       // 이미지 표시
       const uploadedImage = document.querySelector('#uploaded-image');
       uploadedImage.src = imageUrl;
-      uploadedImage.style.display = 'block';
 
       const { data: { text } } = await Tesseract.recognize(
         file,
