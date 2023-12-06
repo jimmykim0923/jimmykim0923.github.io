@@ -4,32 +4,89 @@
   <meta charset="UTF-8">
   <title>우리말 분석기</title>
   <style>
-    /* CSS 스타일 */
-    /* 스타일 코드 추가 */
+    /* 기존 CSS 스타일 */
+    body {
+      font-family: 'Dokdo', cursive;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5dc; /* 베이지 색상 */
+    }
+    header {
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px; /* 끝이 모난 사각형 모양 */
+      margin-right: 10px;
+      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
+      border: none;
+      cursor: pointer;
+    }
+    .result-container {
+      border: 1px solid #ccc;
+      width: 70%;
+      margin: 20px auto;
+      padding: 20px;
+      text-align: center;
+      background-color: #fff; /* 텍스트 블록 배경색 */
+    }
+    #check-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 10px; /* 끝이 모난 사각형 모양 */
+      cursor: pointer;
+      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
+    }
+    #download-button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 10px; /* 끝이 모난 사각형 모양 */
+      text-decoration: none;
+      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <!-- 헤더 내용 -->
+  <h1>우리말 분쇄기</h1>
+  <h2>경성고가 만든 형태소 분석기</h2>
 </header>
 
 <div class="container">
   <button class="button" onclick="handleOCR()">사진 업로드</button>
+  <button class="button">사용자 사전 등록하기</button>
 </div>
 
 <div class="result-container">
+  <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
+  <!-- 예시로 빈 화면을 표시하고 있습니다 -->
   <div id="recognized-text" style="height: 300px;"></div>
-  <button id="analyze-button" onclick="analyzeText()">형태소 분석하기</button>
-  <a href="#" id="download-button" download="analyzed_text.txt" onclick="downloadText()">다운로드</a>
+  <button id="check-button">검사하기</button>
+  <a href="#" id="download-button">다운로드</a>
 </div>
 
-<!-- kiwipiepy 스크립트 -->
-<script src="https://cdn.jsdelivr.net/npm/kiwipiepy"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/kiwipiepy"></script>
 <script>
-  // OCR로 이미지 읽기
-  async function handleOCR() {
+  function handleOCR() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
@@ -40,34 +97,25 @@
         'kor',
         { logger: m => console.log(m) }
       );
-      // 인식된 텍스트를 결과 컨테이너에 표시
-      document.querySelector('.result-container').innerHTML = `<p>${text}</p>`;
+      document.querySelector('#recognized-text').innerText = text;
+      analyzeText(text); // 텍스트 분석 수행
     });
     fileInput.click();
   }
 
-  // 텍스트를 형태소 분석하는 함수
-  async function analyzeText() {
-    const text = document.querySelector('.result-container').innerText;
+  async function analyzeText(text) {
     const kiwi = new Kiwi();
-    
-    // kiwipiepy로 형태소 분석
     const result = await kiwi.analyze(text);
-
-    // 형태소 분석 결과를 결과 컨테이너에 표시
-    const resultContainer = document.querySelector('.result-container');
-    resultContainer.innerHTML = '';
-    result.forEach((token) => {
-      resultContainer.innerHTML += `<p>${token[0]} (${token[1]})</p>`;
-    });
+    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
+    
+    // 분석된 결과를 .result-container에 표시
+    document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
 
     // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
     const downloadLink = document.querySelector('#download-button');
-    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
     downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
   }
 </script>
-
 
 </body>
 </html>
