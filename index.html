@@ -5,88 +5,31 @@
   <title>우리말 분석기</title>
   <style>
     /* CSS 스타일 */
-    body {
-      font-family: 'Dokdo', cursive;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5dc; /* 베이지 색상 */
-    }
-    header {
-      background-color: #f0f0f0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      text-align: center;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      margin-right: 10px;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-      border: none;
-      cursor: pointer;
-    }
-    .result-container {
-      border: 1px solid #ccc;
-      width: 70%;
-      margin: 20px auto;
-      padding: 20px;
-      text-align: left;
-      background-color: #fff; /* 텍스트 블록 배경색 */
-      overflow-y: scroll;
-      max-height: 300px;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-    }
-    #recognized-text {
-      height: 100%;
-    }
-    #analyze-button, #download-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      cursor: pointer;
-      text-decoration: none;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    #download-button {
-      background-color: #e74c3c;
-    }
+    /* 스타일 코드 추가 */
   </style>
 </head>
 <body>
 
 <header>
-  <h1>우리말 분쇄기</h1>
-  <h2>경성고가 만든 형태소 분석기</h2>
+  <!-- 헤더 내용 -->
 </header>
 
 <div class="container">
   <button class="button" onclick="handleOCR()">사진 업로드</button>
-  <button class="button">사용자 사전 등록하기</button>
 </div>
 
 <div class="result-container">
-  <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
-  <!-- 예시로 빈 화면을 표시하고 있습니다 -->
   <div id="recognized-text" style="height: 300px;"></div>
   <button id="analyze-button" onclick="analyzeText()">형태소 분석하기</button>
-  <a href="#" id="download-button" download="analyzed_text.txt">다운로드</a>
+  <a href="#" id="download-button" download="analyzed_text.txt" onclick="downloadText()">다운로드</a>
 </div>
 
 <!-- kiwipiepy 스크립트 -->
 <script src="https://cdn.jsdelivr.net/npm/kiwipiepy"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
 <script>
-  // OCR로 이미지 읽기
+  let extractedText = ''; // 이미지에서 추출된 텍스트 저장
+
   function handleOCR() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -98,34 +41,30 @@
         'kor',
         { logger: m => console.log(m) }
       );
-      // 인식된 텍스트를 화면에 표시
-      document.querySelector('#recognized-text').innerText = text;
+      extractedText = text; // 추출된 텍스트 저장
+      document.querySelector('#recognized-text').innerText = text; // 텍스트 표시
     });
     fileInput.click();
   }
 
-  // 텍스트를 형태소 분석하는 함수
   async function analyzeText() {
-    document.querySelector('#recognized-text').innerHTML = text;
     const kiwi = new Kiwi();
-    
-    // kiwipiepy로 형태소 분석
-    const result = await kiwi.analyze(text);
-
-    // 형태소 분석 결과를 화면에 표시
+    const result = await kiwi.analyze(extractedText); // 추출된 텍스트로 형태소 분석
     const resultContainer = document.querySelector('#recognized-text');
+
     resultContainer.innerHTML = '';
     result.forEach((token) => {
       resultContainer.innerHTML += `<p>${token[0]} (${token[1]})</p>`;
     });
+  }
 
-    // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
+  function downloadText() {
+    const analyzedText = extractedText; // 저장된 추출 텍스트 활용
     const downloadLink = document.querySelector('#download-button');
-    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
+
     downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
   }
 </script>
 
 </body>
 </html>
-
