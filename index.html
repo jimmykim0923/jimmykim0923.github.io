@@ -39,29 +39,6 @@
       text-align: center;
       background-color: #fff; /* 텍스트 블록 배경색 */
     }
-    #check-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      cursor: pointer;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    #download-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      text-decoration: none;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    /* 이미지 스타일 */
     #uploaded-image {
       max-width: 100%;
       height: auto;
@@ -77,65 +54,41 @@
 </header>
 
 <div class="container">
-    <label for="fileInput" class="button">사진 업로드</label>
-    <input type="file" id="fileInput" style="display: none;">
-    <button class="button">사용자 사전 등록하기</button>
+  <label for="fileInput" class="button">사진 업로드</label>
+  <input type="file" id="fileInput" style="display: none;">
 </div>
 
 <div class="result-container">
-  <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
-  <!-- 예시로 빈 화면을 표시하고 있습니다 -->
-  <img id="uploaded-image" alt="Uploaded Image">
-  <div id="recognized-text" style="height: 300px;"></div>
-  <button id="check-button">검사하기</button>
-  <a href="#" id="download-button">다운로드</a>
+  <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
 <script>
-  function handleOCR() {
-    const fileInput = document.querySelector('#fileInput');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      const imageUrl = URL.createObjectURL(file); // 파일 URL 생성
+  document.getElementById('fileInput').addEventListener('change', async function(event) {
+    const file = event.target.files[0];
+    const imageUrl = URL.createObjectURL(file); // 파일 URL 생성
 
-      // 이미지 표시
-      const uploadedImage = document.querySelector('#uploaded-image');
-      uploadedImage.src = imageUrl;
+    // 이미지 표시
+    const uploadedImage = document.getElementById('uploaded-image');
+    uploadedImage.src = imageUrl;
+    uploadedImage.style.display = 'block'; // 이미지 표시
 
-      try {
-        const { data: { text } } = await Tesseract.recognize(
-          file,
-          'kor',
-          { logger: m => console.log(m) }
-        );
+    try {
+      const { data: { text } } = await Tesseract.recognize(
+        file,
+        'kor',
+        { logger: m => console.log(m) }
+      );
 
-        if (text) {
-          document.querySelector('#recognized-text').innerText = text;
-          analyzeText(text); // 텍스트 분석 수행
-        } else {
-          console.log('텍스트를 인식할 수 없습니다.');
-        }
-      } catch (error) {
-        console.error('인식 중 오류 발생:', error);
+      if (text) {
+        console.log('인식된 텍스트:', text);
+      } else {
+        console.log('텍스트를 인식할 수 없습니다.');
       }
-    });
-    fileInput.click();
-  }
-
-  async function analyzeText(text) {
-    const kiwi = new Kiwi();
-    const result = await kiwi.analyze(text);
-    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
-
-    // 분석된 결과를 .result-container에 표시
-    document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
-
-    // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
-    const downloadLink = document.querySelector('#download-button');
-    downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
-  }
+    } catch (error) {
+      console.error('인식 중 오류 발생:', error);
+    }
+  });
 </script>
 
 </body>
