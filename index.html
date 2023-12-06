@@ -37,7 +37,7 @@
       margin: 20px auto;
       padding: 20px;
       text-align: center;
-      background-color: "yellow"; /* 텍스트 블록 배경색 */
+      background-color: #fff; /* 텍스트 블록 배경색 */
     }
     #check-button {
       display: block;
@@ -61,6 +61,12 @@
       text-decoration: none;
       font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
     }
+    /* 이미지 스타일 */
+    #uploaded-image {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -78,6 +84,7 @@
 <div class="result-container">
   <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
   <!-- 예시로 빈 화면을 표시하고 있습니다 -->
+  <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
   <div id="recognized-text" style="height: 300px;"></div>
   <button id="check-button">검사하기</button>
   <a href="#" id="download-button">다운로드</a>
@@ -92,31 +99,39 @@
     fileInput.accept = 'image/*';
     fileInput.addEventListener('change', async (event) => {
       const file = event.target.files[0];
+      const imageUrl = URL.createObjectURL(file); // 파일 URL 생성
+
+      // 이미지 표시
+      const uploadedImage = document.querySelector('#uploaded-image');
+      uploadedImage.src = imageUrl;
+      uploadedImage.style.display = 'block';
+
       const { data: { text } } = await Tesseract.recognize(
         file,
         'kor',
         { logger: m => console.log(m) }
       );
+
       document.querySelector('#recognized-text').innerText = text;
       analyzeText(text); // 텍스트 분석 수행
     });
-    fileInput.click();
-  }
+    file
+      fileInput.click();
+    }
 
-  async function analyzeText(text) {
-    const kiwi = new Kiwi();
-    const result = await kiwi.analyze(text);
-    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
-    
-    // 분석된 결과를 .result-container에 표시
-    document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
+    async function analyzeText(text) {
+      const kiwi = new Kiwi();
+      const result = await kiwi.analyze(text);
+      const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
 
-    // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
-    const downloadLink = document.querySelector('#download-button');
-    downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
-  }
-</script>
+      // 분석된 결과를 .result-container에 표시
+      document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
+
+      // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
+      const downloadLink = document.querySelector('#download-button');
+      downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
+    }
+  </script>
 
 </body>
 </html>
-
