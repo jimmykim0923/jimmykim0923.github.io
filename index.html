@@ -77,23 +77,20 @@
 </header>
 
 <div class="container">
-  <button class="button" onclick="handleOCR()">사진 업로드</button>
+  <label for="fileInput" class="button">사진 업로드</label>
+  <input type="file" id="fileInput" style="display: none;">
   <button class="button">사용자 사전 등록하기</button>
 </div>
 
 <div class="result-container">
   <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
   <!-- 예시로 빈 화면을 표시하고 있습니다 -->
-  <input type="file" id="fileInput" style="display: none;">
-  <label for="fileInput" class="button">사진 업로드</label>
   <img id="uploaded-image" alt="Uploaded Image">
   <div id="recognized-text" style="height: 300px;"></div>
   <button id="check-button">검사하기</button>
   <a href="#" id="download-button">다운로드</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/kiwipiepy"></script>
 <script>
   function handleOCR() {
     const fileInput = document.querySelector('#fileInput');
@@ -107,14 +104,22 @@
       const uploadedImage = document.querySelector('#uploaded-image');
       uploadedImage.src = imageUrl;
 
-      const { data: { text } } = await Tesseract.recognize(
-        file,
-        'kor',
-        { logger: m => console.log(m) }
-      );
+      try {
+        const { data: { text } } = await Tesseract.recognize(
+          file,
+          'kor',
+          { logger: m => console.log(m) }
+        );
 
-      document.querySelector('#recognized-text').innerText = text;
-      analyzeText(text); // 텍스트 분석 수행
+        if (text) {
+          document.querySelector('#recognized-text').innerText = text;
+          analyzeText(text); // 텍스트 분석 수행
+        } else {
+          console.log('텍스트를 인식할 수 없습니다.');
+        }
+      } catch (error) {
+        console.error('인식 중 오류 발생:', error);
+      }
     });
     fileInput.click();
   }
