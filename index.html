@@ -115,23 +115,22 @@
       document.querySelector('#recognized-text').innerText = text;
       analyzeText(text); // 텍스트 분석 수행
     });
-    file
-      fileInput.click();
-    }
+    fileInput.click();
+  }
 
-    async function analyzeText(text) {
-      const kiwi = new Kiwi();
-      const result = await kiwi.analyze(text);
-      const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
+  async function analyzeText(text) {
+    const kiwi = new Kiwi();
+    const result = await kiwi.analyze(text);
+    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
 
-      // 분석된 결과를 .result-container에 표시
-      document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
+    // 분석된 결과를 .result-container에 표시
+    document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
 
-      // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
-      const downloadLink = document.querySelector('#download-button');
-      downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
-    }
-  </script>
+    // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
+    const downloadLink = document.querySelector('#download-button');
+    downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
+  }
+</script>
 
 </body>
 </html>
