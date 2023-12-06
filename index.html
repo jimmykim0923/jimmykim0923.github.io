@@ -61,6 +61,15 @@
 <div class="result-container">
   <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
 </div>
+  <div class="container">
+  <label for="fileInput" class="button">사진 업로드</label>
+  <input type="file" id="fileInput" style="display: none;">
+</div>
+
+<div class="result-container">
+  <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
+  <div id="recognized-text"></div> <!-- 텍스트를 표시할 요소 -->
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.4.0/dist/tesseract.min.js"></script>
 <script>
@@ -81,6 +90,9 @@
       );
 
       if (text) {
+        // 인식된 텍스트를 #recognized-text 요소에 표시
+        const recognizedTextElement = document.getElementById('recognized-text');
+        recognizedTextElement.innerText = text;
         console.log('인식된 텍스트:', text);
       } else {
         console.log('텍스트를 인식할 수 없습니다.');
