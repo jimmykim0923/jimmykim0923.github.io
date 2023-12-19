@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>우리말 분석기</title>
+  <title>Korean Language Analyzer</title>
   <link rel="stylesheet" href="styles.css">
   <style>
      /* 기존 CSS 스타일 */
@@ -73,63 +73,70 @@
 <body>
 
 <header>
-  <h1>우리말 분쇄기</h1>
-  <h2>경성고가 만든 형태소 분석기</h2>
+  <h1>Korean word grinder</h1>
+  <h2>morpheme analyzer created by Gyeongseong High School</h2>
 </header>
 
 <div class="container">
-  <button class="button" onclick="handleOCR()">사진 업로드</button>
-  <button class="button">사용자 사전 등록하기</button>
+  <input type="file" id="file-input" accept="image/*" style="display: none;">
+  <button class="button" onclick="uploadImage()">Upload photo</button>
+  <button class="button">Register in user dictionary</button>
 </div>
 
 <div class="result-container">
-  <!-- 여기에 올린 문서를 인식한 텍스트가 나타날 부분 -->
-  <!-- 예시로 빈 화면을 표시하고 있습니다 -->
+  <!-- The area where the text that recognizes the document uploaded here will appear -->
+  <!-- As an example, a blank screen is displayed -->
   <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
   <div id="recognized-text" style="height: 300px;"></div>
-  <button id="check-button">검사하기</button>
-  <a href="#" id="download-button">다운로드</a>
+  <button id="check-button">Check</button>
+  <a href="#" id="download-button">Download</a>
 </div>
 
 <script>
-  function handleOCR() {
+  async function uploadImageToFlask(imageFile) {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    try {
+      const response = await fetch('http://34.64.242.244:5000/analyze_image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Process the data received from Flask (e.g., display analysis results)
+      } else {
+        console.error('Error:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  function uploadImage() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.addEventListener('change', async (event) => {
       const file = event.target.files[0];
-      const imageUrl = URL.createObjectURL(file); // 파일 URL 생성
+      const imageUrl = URL.createObjectURL(file); // Create file URL
 
-      // 이미지 표시
+      // Display the uploaded image
       const uploadedImage = document.querySelector('#uploaded-image');
       uploadedImage.src = imageUrl;
       uploadedImage.style.display = 'block';
 
-      const { data: { text } } = await Tesseract.recognize(
-        file,
-        'kor',
-        { logger: m => console.log(m) }
-      );
-
-      document.querySelector('#recognized-text').innerText = text;
-      analyzeText(text); // 텍스트 분석 수행
+      // Send the image file to the backend for analysis
+      await uploadImageToFlask(file);
     });
     fileInput.click();
   }
-
-  async function analyzeText(text) {
-    const kiwi = new Kiwi();
-    const result = await kiwi.analyze(text);
-    const analyzedText = result.map((token) => `${token[0]} (${token[1]})`).join('\n');
-
-    // 분석된 결과를 .result-container에 표시
-    document.querySelector('.result-container').innerHTML = `<p>${analyzedText}</p>`;
-
-    // 분석된 결과를 다운로드할 수 있는 형태로 변환하여 다운로드 링크에 연결
-    const downloadLink = document.querySelector('#download-button');
-    downloadLink.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(analyzedText);
-  }
 </script>
+
+</body>
+</html>
+
 
 </body>
 </html>
