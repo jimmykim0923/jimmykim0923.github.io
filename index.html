@@ -156,23 +156,54 @@ function analyzeImage(file) {
   });
 }
 
-// KoalaNLP 형태소 분석 함수
-function performKoalaNLPAnalysis(text) {
-  // KoalaNLP 형태소 분석기 선택 (여기서는 HNN 사용)
-  const { HNN } = require('koalanlp/API');
-  const { Util } = require('koalanlp/Util');
+// 네이버 언어 분석 API를 사용하여 이미지 분석 및 형태소 분석하는 함수
+function analyzeImage(file) {
+  // FileReader를 사용하여 이미지를 읽습니다.
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const uploadedImage = document.getElementById('uploaded-image');
+    uploadedImage.src = e.target.result; // 선택한 이미지를 미리보기로 표시합니다.
+    uploadedImage.style.display = 'block'; // 이미지를 표시합니다.
 
-  // KoalaNLP 초기화
-  Util.initialize(HNN);
+    // 이미지 데이터를 바이너리로 변환
+    const binaryData = e.target.result.split(',')[1];
 
-  // 형태소 분석 수행
-  return HNN.tag(text)
-    .then(result => {
-      return result; // 형태소 분석 결과 반환
+    // 네이버 언어 분석 API로 이미지 분석 및 형태소 분석 요청을 보냅니다.
+    performNaverLanguageAnalysis(binaryData);
+  };
+  reader.readAsDataURL(file); // 파일을 읽어 Base64 형식으로 변환합니다.
+}
+
+// 네이버 언어 분석 API를 사용하여 형태소 분석하는 함수
+function performNaverLanguageAnalysis(imageData) {
+  // 네이버 언어 분석 API 요청 데이터 설정
+  const requestData = {
+    image: imageData,
+    lang: 'ko',
+  };
+
+  // 네이버 언어 분석 API에 POST 요청 보내기
+  fetch('https://openapi.naver.com/v1/papago/n2mt', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'X-Naver-Client-Id': 'YOUR_CLIENT_ID',
+      'X-Naver-Client-Secret': 'YOUR_CLIENT_SECRET',
+    },
+    body: new URLSearchParams(requestData),
+  })
+    .then(response => response.json())
+    .then(data => {
+      // 네이버 언어 분석 API로부터 추출한 분석 결과
+      const analysisResult = data; // 여기에 파싱해야 할 데이터를 넣으세요.
+
+      // 화면에 분석 결과 표시
+      const analysisResultDiv = document.getElementById('analysis-result');
+      analysisResultDiv.innerText = JSON.stringify(analysisResult);
     })
     .catch(error => {
-      console.error('KoalaNLP 형태소 분석 중 오류가 발생했습니다:', error);
-      return null;
+      // 오류 처리
+      console.error('네이버 언어 분석 API 요청 중 오류가 발생했습니다:', error);
     });
 }
 </script>
