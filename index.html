@@ -5,7 +5,7 @@
   <title>Korean Language Analyzer</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-     /* 기존 CSS 스타일 */
+    /* 기존 CSS 스타일 */
     body {
       font-family: 'Dokdo', cursive;
       margin: 0;
@@ -78,64 +78,105 @@
 </header>
 
 <div class="container">
+  <!-- 이미지 업로드 버튼 -->
   <input type="file" id="file-input" accept="image/*" style="display: none;">
   <button class="button" onclick="uploadImage()">Upload photo</button>
   <button class="button">Register in user dictionary</button>
 </div>
 
 <div class="result-container">
-  <!-- The area where the text that recognizes the document uploaded here will appear -->
-  <!-- As an example, a blank screen is displayed -->
+  <!-- 이미지 및 인식된 텍스트를 표시할 영역 -->
   <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
   <div id="recognized-text" style="height: 300px;"></div>
-  <button id="check-button">Check</button>
+  <!-- 분석 버튼 및 다운로드 링크 -->
+  <button id="check-button" onclick="analyzeImage()">Check</button>
   <a href="#" id="download-button">Download</a>
 </div>
 
 <script>
-  async function uploadImageToFlask(imageFile) {
-    const formData = new FormData();
-    formData.append('image', imageFile);
-
-    try {
-      const response = await fetch('http://34.64.242.244:5000/analyze_image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Process the data received from Flask (e.g., display analysis results)
-      } else {
-        console.error('Error:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error:', error);
+// 파일 선택 이벤트 리스너 추가
+document.getElementById('file-input').addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const uploadedImage = document.getElementById('uploaded-image');
+      uploadedImage.src = e.target.result; // 선택한 이미지를 미리보기로 표시합니다.
+      uploadedImage.style.display = 'block'; // 이미지를 표시합니다.
+      
+      // Vision API로 이미지 분석 함수 호출
+      analyzeImage(file);
     }
+    reader.readAsDataURL(file); // 파일을 읽어 Base64 형식으로 변환합니다.
   }
+});
 
-  function uploadImage() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      const imageUrl = URL.createObjectURL(file); // Create file URL
+// Vision API 및 KoalaNLP를 사용하여 이미지 처리 및 형태소 분석하는 함수
+function analyzeImage(file) {
+  // Vision API 요청 데이터 설정
+  const requestData = {
+    requests: [
+      {
+        image: {
+          content: file
+        },
+        features: [
+          {
+            type: 'TEXT_DETECTION' // 이미지에서 텍스트를 감지합니다.
+          }
+        ]
+      }
+    ]
+  };
 
-      // Display the uploaded image
-      const uploadedImage = document.querySelector('#uploaded-image');
-      uploadedImage.src = imageUrl;
-      uploadedImage.style.display = 'block';
+  // Vision API에 POST 요청 보내기
+  fetch('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyB4wrUHIQlI0Egf8NbW6a4CpTLDpA-eaEA', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestData),
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Vision API로부터 추출한 텍스트
+    const extractedText = data.responses[0].fullTextAnnotation.text;
+    
+    // KoalaNLP로 형태소 분석 수행
+    performKoalaNLPAnalysis(extractedText)
+      .then(analysisResult => {
+        // 형태소 분석 결과를 화면에 표시
+        const recognizedTextDiv = document.getElementById('recognized-text');
+        recognizedTextDiv.innerText = analysisResult ? JSON.stringify(analysisResult) : '분석 결과가 없습니다.';
+      });
+  })
+  .catch(error => {
+    // 오류 처리
+    console.error('Vision API 요청 중 오류가 발생했습니다:', error);
+  });
+}
 
-      // Send the image file to the backend for analysis
-      await uploadImageToFlask(file);
+// KoalaNLP 형태소 분석 함수
+function performKoalaNLPAnalysis(text) {
+  // KoalaNLP 형태소 분석기 선택 (여기서는 HNN 사용)
+  const { HNN } = require('koalanlp/API');
+  const { Util } = require('koalanlp/Util');
+
+  // KoalaNLP 초기화
+  Util.initialize(HNN);
+
+  // 형태소 분석 수행
+  return HNN.tag(text)
+    .then(result => {
+      return result; // 형태소 분석 결과 반환
+    })
+    .catch(error => {
+      console.error('KoalaNLP 형태소 분석 중 오류가 발생했습니다:', error);
+      return null;
     });
-    fileInput.click();
-  }
-</script>
+}
 
-</body>
-</html>
+</script>
 
 
 </body>
