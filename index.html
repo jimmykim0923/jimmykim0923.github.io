@@ -92,90 +92,77 @@
   <button id="check-button" onclick="analyzeImage()">Check</button>
   <a href="#" id="download-button">Download</a>
 </div>
-
+<script src="https://unpkg.com/koalanlp/dist/koalanlp.min.js"></script>
 <script>
-// 파일 선택 이벤트 리스너 추가
-document.getElementById('file-input').addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const uploadedImage = document.getElementById('uploaded-image');
-      uploadedImage.src = e.target.result; // 선택한 이미지를 미리보기로 표시합니다.
-      uploadedImage.style.display = 'block'; // 이미지를 표시합니다.
-      
-      // Vision API로 이미지 분석 함수 호출
-      analyzeImage(file);
-    }
-    reader.readAsDataURL(file); // 파일을 읽어 Base64 형식으로 변환합니다.
-  }
-});
+<script>
+  // 파일 선택 이벤트 리스너 추가
+  document.getElementById('file-input').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const uploadedImage = document.getElementById('uploaded-image');
+        uploadedImage.src = e.target.result;
+        uploadedImage.style.display = 'block';
 
-// Vision API 및 KoalaNLP를 사용하여 이미지 처리 및 형태소 분석하는 함수
-function analyzeImage(file) {
-  // Vision API 요청 데이터 설정
-  const requestData = {
-    requests: [
-      {
-        image: {
-          content: file
-        },
-        features: [
-          {
-            type: 'TEXT_DETECTION' // 이미지에서 텍스트를 감지합니다.
-          }
-        ]
+        analyzeImage(file);
       }
-    ]
-  };
-
-  // Vision API에 POST 요청 보내기
-  fetch('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyB4wrUHIQlI0Egf8NbW6a4CpTLDpA-eaEA', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestData),
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Vision API로부터 추출한 텍스트
-    const extractedText = data.responses[0].fullTextAnnotation.text;
-    
-    // KoalaNLP로 형태소 분석 수행
-    performKoalaNLPAnalysis(extractedText)
-      .then(analysisResult => {
-        // 형태소 분석 결과를 화면에 표시
-        const recognizedTextDiv = document.getElementById('recognized-text');
-        recognizedTextDiv.innerText = analysisResult ? JSON.stringify(analysisResult) : '분석 결과가 없습니다.';
-      });
-  })
-  .catch(error => {
-    // 오류 처리
-    console.error('Vision API 요청 중 오류가 발생했습니다:', error);
+      reader.readAsDataURL(file);
+    }
   });
-}
 
-// KoalaNLP 형태소 분석 함수
-function performKoalaNLPAnalysis(text) {
-  // KoalaNLP 형태소 분석기 선택 (여기서는 HNN 사용)
-  const { HNN } = require('koalanlp/API');
-  const { Util } = require('koalanlp/Util');
+  function analyzeImage(file) {
+    const requestData = {
+      requests: [
+        {
+          image: {
+            content: file
+          },
+          features: [
+            {
+              type: 'TEXT_DETECTION'
+            }
+          ]
+        }
+      ]
+    };
 
-  // KoalaNLP 초기화
-  Util.initialize(HNN);
+    fetch('https://vision.googleapis.com/v1/images:annotate?key=YOUR_API_KEY', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      const extractedText = data.responses[0].fullTextAnnotation.text;
 
-  // 형태소 분석 수행
-  return HNN.tag(text)
-    .then(result => {
-      return result; // 형태소 분석 결과 반환
+      performKoalaNLPAnalysis(extractedText)
+        .then(analysisResult => {
+          const recognizedTextDiv = document.getElementById('recognized-text');
+          recognizedTextDiv.innerText = analysisResult ? JSON.stringify(analysisResult) : '분석 결과가 없습니다.';
+        });
     })
     .catch(error => {
-      console.error('KoalaNLP 형태소 분석 중 오류가 발생했습니다:', error);
-      return null;
+      console.error('Vision API 요청 중 오류가 발생했습니다:', error);
     });
-}
+  }
 
+  function performKoalaNLPAnalysis(text) {
+    KoalaNLP.initialize({ packages: { HNN: '1.9.1' } });
+
+    return KoalaNLP.hnn.analyze(text)
+      .then(result => {
+        return result;
+      })
+      .catch(error => {
+        console.error('KoalaNLP 형태소 분석 중 오류가 발생했습니다:', error);
+        return null;
+      });
+  }
+
+  // ... (이전 스크립트 및 함수) ...
 </script>
 
 
