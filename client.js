@@ -1,52 +1,31 @@
-<!-- Rest of your HTML code remains unchanged -->
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .real-upload {
+      display: none;
+    }
 
-  <div class="container">
-    <!-- 이미지 업로드 버튼 -->
-    <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-    <button class="button" onclick="triggerFileInput()">Upload photo</button>
-  </div>
+    .upload {
+      width: 200px;
+      height: 200px;
+      background-color: antiquewhite;
+    }
+  </style>
+</head>
 
-  <div class="result-container">
-    <!-- 이미지 및 인식된 텍스트를 표시할 영역 -->
-    <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
-    <div id="recognized-text" style="height: 300px;"></div>
-    <!-- 분석 버튼 및 다운로드 링크 -->
-    <button id="check-button" onclick="analyzeImage()">Check</button>
-    <a href="#" id="download-button">Download</a>
-  </div>
+<body>
+  <input type="file" class="real-upload" accept="image/*" required multiple>
+  <div class="upload"></div>
+  <script>
+    function getImageFiles(e) {
+      const files = e.currentTarget.files;
+      console.log(typeof files, files);
+    }
 
-<script>
-// Function to handle file selection
-function handleFileSelect(event) {
-  const input = event.target;
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
+    const realUpload = document.querySelector('.real-upload');
+    const upload = document.querySelector('.upload');
 
-    fetch('/upload_image/', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Assuming the backend returns the processed image URL
-      const imageUrl = data.processedImageUrl;
-
-      // Display the uploaded image on the webpage
-      const uploadedImage = document.getElementById('uploaded-image');
-      uploadedImage.src = imageUrl;
-      uploadedImage.style.display = 'block';
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  }
-}
-
-// Function to trigger the file input click
-function triggerFileInput() {
-  const fileInput = document.getElementById('file-input');
-  fileInput.click(); // Simulate a click on the file input
-}
-</script>
+    upload.addEventListener('click', () => realUpload.click());
+    realUpload.addEventListener('change', getImageFiles);
+  </script>
+</body>
