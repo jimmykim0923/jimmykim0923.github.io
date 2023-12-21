@@ -4,6 +4,16 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     /* 기존 CSS 스타일 */
+    
+    /* Styling for the result text box */
+    result-textbox {
+      width: 80%;
+      height: 300px;
+      margin: 20px auto;
+      padding: 10px;
+      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
+      resize: none;
+    }
     body {
       font-family: 'Dokdo', cursive;
       margin: 0;
@@ -80,35 +90,41 @@
   <div class="extracted-text-container">
     <textarea id="extractedText" rows="10" cols="50" placeholder="Extracted Text"></textarea>
   </div>
-    <script>
-    function displayAndUploadImage(e) {
-      const files = e.currentTarget.files;
-      const uploadDiv = document.querySelector('.upload');
-      const formData = new FormData();
-
-      if (files && files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          uploadDiv.innerHTML = ''; // Clear previous content
-          uploadDiv.appendChild(img);
-
-          // For demonstration purposes, setting a sample extracted text
-          const extractedText = "Sample extracted text"; // Replace this with actual extracted text
-
-          // Set the extracted text in the textarea
-          const extractedTextElem = document.getElementById('extractedText');
-          extractedTextElem.value = extractedText;
-        }
-
-        reader.readAsDataURL(files[0]);
-      }
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.3.0/dist/tesseract.min.js"></script>
+  <script>
+    // OCR performance function
+    function performOCR(file) {
+      // Recognize text from image using Tesseract.js
+      Tesseract.recognize(
+        file,
+        'eng', // Set recognition language (here: English)
+        { logger: m => console.log(m) } // Set log information
+      ).then(({ data: { text } }) => {
+        // Display recognized text in the text area
+        const resultTextbox = document.querySelector('.result-textbox');
+        resultTextbox.value = text;
+      });
     }
 
-    const realUpload = document.querySelector('.real-upload');
-    realUpload.addEventListener('change', displayAndUploadImage);
+    // Function executed when selecting a file
+    function getImageFiles(e) {
+      const file = e.currentTarget.files[0];
+      
+      // Perform OCR on selected image
+      performOCR(file);
+    }
+
+    // Select the file input element
+    const realUpload = document.createElement('input');
+    realUpload.type = 'file';
+    realUpload.accept = 'image/*';
+    realUpload.multiple = false;
+    realUpload.addEventListener('change', getImageFiles);
+
+    // Automatically trigger file selection when the page loads
+    window.onload = () => {
+      realUpload.click();
+    };
   </script>
 </body>
 </html>
