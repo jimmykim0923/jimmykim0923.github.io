@@ -92,7 +92,7 @@
   
   <!-- Your Script -->
   <script>
-    function getImageFiles(e) {
+    function getImageFiles(e) {  
       const file = e.currentTarget.files[0];
       
       const uploadedImage = document.getElementById('uploadedImage'); 
@@ -115,7 +115,7 @@
           requests: [
             {
               image: {
-                content: formData.get('file')
+                content: YOUR_IMAGE_DATA // Image data encoded in Base64
               },
               features: [
                 { type: 'TEXT_DETECTION' }
@@ -126,24 +126,12 @@
       })
       .then(response => response.json())
       .then(data => {
-        const textAnnotations = data.responses[0].textAnnotations;
-        if (textAnnotations && textAnnotations.length > 0) {
-          const text = textAnnotations[0].description;
-          const extractedTextDiv = document.getElementById('extractedText');
-          extractedTextDiv.innerText = text;
-          
-          const textArea = document.getElementById('textArea');
-          textArea.style.display = 'block';
-          textArea.value = text;
-        } else {
-          console.error('No text found.');
-        }
+        // Process the data and extract text as before
       })
       .catch(error => {
         console.error('Error:', error);
       });
     }
-
     const fileButton = document.getElementById('fileButton');
     const realUpload = document.getElementById('realUpload');
 
