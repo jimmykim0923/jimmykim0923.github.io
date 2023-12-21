@@ -96,7 +96,7 @@
           formData.append('images', files[0]);
 
           // Send the image file to Django using fetch
-          fetch('/upload', {
+          fetch('http://127.0.0.1:8000/upload', {
             method: 'POST',
             body: formData
           })
