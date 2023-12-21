@@ -90,30 +90,50 @@
   <div class="extracted-text-container">
     <textarea id="extractedText" rows="10" cols="50" placeholder="Extracted Text"></textarea>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
-  <script>
-    // Function executed when selecting a file
+   <script>
     function getImageFiles(e) {
       const file = e.currentTarget.files[0];
       
-      // Display the uploaded image
       const uploadedImage = document.getElementById('uploadedImage'); 
       uploadedImage.style.display = 'block';
       uploadedImage.src = URL.createObjectURL(file);
 
-      // Perform OCR on the selected image
-      Tesseract.recognize(
-        file,
-        'eng', // Set recognition language (here: English)
-        { logger: m => console.log(m) } // Set log information
-      ).then(({ data: { text } }) => {
-        // Display recognized text in the text area
+      // Use Google Vision API for text recognition
+      const apiKey = 'AIzaSyB4wrUHIQlI0Egf8NbW6a4CpTLDpA-eaEA';
+      const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
+      
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              image: {
+                content: formData.get('file')
+              },
+              features: [
+                { type: 'TEXT_DETECTION' }
+              ]
+            }
+          ]
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const text = data.responses[0].fullTextAnnotation.text;
         const extractedText = document.getElementById('extractedText');
         extractedText.value = text;
+      })
+      .catch(error => {
+        console.error('Error:', error);
       });
     }
 
-    // Select the file input element and trigger file selection
     const fileButton = document.getElementById('fileButton');
     const realUpload = document.getElementById('realUpload');
 
@@ -123,6 +143,8 @@
 
     realUpload.addEventListener('change', getImageFiles);
   </script>
+</body>
+</html>
 </body>
 </html>
 
