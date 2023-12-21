@@ -77,7 +77,10 @@
   <button id="fileButton">Select Images</button>
   <input type="file" class="real-upload" accept="image/*" required multiple>
   <div class="upload"></div>
-  <script>
+  <div class="extracted-text-container">
+    <textarea id="extractedText" rows="10" cols="50" placeholder="Extracted Text"></textarea>
+  </div>
+    <script>
     function displayAndUploadImage(e) {
       const files = e.currentTarget.files;
       const uploadDiv = document.querySelector('.upload');
@@ -92,26 +95,12 @@
           uploadDiv.innerHTML = ''; // Clear previous content
           uploadDiv.appendChild(img);
 
-          // Append the file to FormData for sending to Django
-          formData.append('images', files[0]);
+          // For demonstration purposes, setting a sample extracted text
+          const extractedText = "Sample extracted text"; // Replace this with actual extracted text
 
-          // Send the image file to Django using fetch
-          fetch('http://127.0.0.1:8000/upload', {
-            method: 'POST',
-            body: formData
-          })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok.');
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log('Upload successful:', data);
-            })
-            .catch(error => {
-              console.error('Error during upload:', error);
-            });
+          // Set the extracted text in the textarea
+          const extractedTextElem = document.getElementById('extractedText');
+          extractedTextElem.value = extractedText;
         }
 
         reader.readAsDataURL(files[0]);
@@ -121,6 +110,8 @@
     const realUpload = document.querySelector('.real-upload');
     realUpload.addEventListener('change', displayAndUploadImage);
   </script>
+</body>
+</html>
 </body>
 
 
