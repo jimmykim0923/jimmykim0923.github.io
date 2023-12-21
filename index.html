@@ -97,7 +97,7 @@
       // Recognize text from image using Tesseract.js
       Tesseract.recognize(
         file,
-        'kor', // Set recognition language (here: English)
+        'eng', // Set recognition language (here: English)
         { logger: m => console.log(m) } // Set log information
       ).then(({ data: { text } }) => {
         // Display recognized text in the text area
