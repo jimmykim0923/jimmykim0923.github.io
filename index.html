@@ -79,18 +79,19 @@
   </style>
 </head>
 
-<header>
-  <h1>한국어 분쇄기</h1>
-  <h2>morpheme analyzer created by Gyeongseong High School</h2>
-</header>
 <body>
+  <h1>한국어 분쇄기</h1>
   <button id="fileButton">Select Images</button>
-  <input type="file" class="real-upload" accept="image/*" required multiple>
-  <div class="upload"></div>
+  <input type="file" id="realUpload" accept="image/*" required multiple style="display: none;">
+  <img id="uploadedImage" alt="Uploaded Image" style="max-width: 100%; height: auto; display: none;">
   <div class="extracted-text-container">
-    <textarea id="extractedText" rows="10" cols="50" placeholder="Extracted Text"></textarea>
+    <h2>Extracted Text:</h2>
+    <div id="extractedText"></div>
+    <textarea id="textArea" rows="10" cols="50" placeholder="Extracted Text" style="display: none;"></textarea>
   </div>
-   <script>
+  
+  <!-- Your Script -->
+  <script>
     function getImageFiles(e) {
       const file = e.currentTarget.files[0];
       
@@ -125,9 +126,18 @@
       })
       .then(response => response.json())
       .then(data => {
-        const text = data.responses[0].fullTextAnnotation.text;
-        const extractedText = document.getElementById('extractedText');
-        extractedText.value = text;
+        const textAnnotations = data.responses[0].textAnnotations;
+        if (textAnnotations && textAnnotations.length > 0) {
+          const text = textAnnotations[0].description;
+          const extractedTextDiv = document.getElementById('extractedText');
+          extractedTextDiv.innerText = text;
+          
+          const textArea = document.getElementById('textArea');
+          textArea.style.display = 'block';
+          textArea.value = text;
+        } else {
+          console.error('No text found.');
+        }
       })
       .catch(error => {
         console.error('Error:', error);
@@ -143,8 +153,6 @@
 
     realUpload.addEventListener('change', getImageFiles);
   </script>
-</body>
-</html>
 </body>
 </html>
 
