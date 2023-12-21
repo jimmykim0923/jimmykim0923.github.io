@@ -1,78 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Korean Language Analyzer</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* 기존 CSS 스타일 */
-    body {
-      font-family: 'Dokdo', cursive;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f5dc; /* 베이지 색상 */
-    }
-    header {
-      background-color: #f0f0f0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      margin-right: 10px;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-      border: none;
-      cursor: pointer;
-    }
-    .result-container {
-      border: 1px solid #ccc;
-      width: 70%;
-      margin: 20px auto;
-      padding: 20px;
-      text-align: center;
-      background-color: #fff; /* 텍스트 블록 배경색 */
-    }
-    #check-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      cursor: pointer;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    #download-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #e74c3c;
-      color: #fff;
-      border: none;
-      border-radius: 10px; /* 끝이 모난 사각형 모양 */
-      text-decoration: none;
-      font-family: 'Dokdo', cursive; /* 버튼 글꼴 */
-    }
-    /* 이미지 스타일 */
-    #uploaded-image {
-      max-width: 100%;
-      height: auto;
-      margin-bottom: 20px;
-    }
-  </style>
-</head>
+<!-- Rest of your HTML code remains unchanged -->
 
-<header>
-  <h1>한국어 분쇄기</h1>
-  <h2>morpheme analyzer created by Gyeongseong High School</h2>
-</header>
+<div class="container">
+  <!-- 이미지 업로드 버튼 -->
+  <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+  <button class="button" onclick="triggerFileInput()">Upload photo</button>
+</div>
 
+<div class="result-container">
+  <!-- 이미지 및 인식된 텍스트를 표시할 영역 -->
+  <img id="uploaded-image" alt="Uploaded Image" style="display: none;">
+  <div id="recognized-text" style="height: 300px;"></div>
+  <!-- 분석 버튼 및 다운로드 링크 -->
+  <button id="check-button" onclick="analyzeImage()">Check</button>
+  <a href="#" id="download-button">Download</a>
+</div>
+
+<script>
+// Function to handle file selection
+function handleFileSelect(event) {
+  const input = event.target;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/upload_image/', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Assuming the backend returns the processed image URL
+      const imageUrl = data.processedImageUrl;
+
+      // Display the uploaded image on the webpage
+      const uploadedImage = document.getElementById('uploaded-image');
+      uploadedImage.src = imageUrl;
+      uploadedImage.style.display = 'block';
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+}
+
+// Function to trigger the file input click
+function triggerFileInput() {
+  const fileInput = document.getElementById('file-input');
+  fileInput.click(); // Simulate a click on the file input
+}
+</script>
