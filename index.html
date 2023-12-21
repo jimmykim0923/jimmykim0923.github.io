@@ -78,38 +78,48 @@
   <input type="file" class="real-upload" accept="image/*" required multiple>
   <div class="upload"></div>
   <script>
-    function uploadImageFiles(e) {
+    function displayAndUploadImage(e) {
       const files = e.currentTarget.files;
+      const uploadDiv = document.querySelector('.upload');
       const formData = new FormData();
-      
-      for (let i = 0; i < files.length; i++) {
-        formData.append('images', files[i]);
-      }
 
-      fetch('/upload', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
+      if (files && files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          uploadDiv.innerHTML = ''; // Clear previous content
+          uploadDiv.appendChild(img);
+
+          // Append the file to FormData for sending to Django
+          formData.append('images', files[0]);
+
+          // Send the image file to Django using fetch
+          fetch('/upload', {
+            method: 'POST',
+            body: formData
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok.');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Upload successful:', data);
+            })
+            .catch(error => {
+              console.error('Error during upload:', error);
+            });
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Upload successful:', data);
-      })
-      .catch(error => {
-        console.error('Error during upload:', error);
-      });
+
+        reader.readAsDataURL(files[0]);
+      }
     }
 
     const realUpload = document.querySelector('.real-upload');
-    realUpload.addEventListener('change', uploadImageFiles);
-
-    const fileButton = document.getElementById('fileButton');
-    fileButton.addEventListener('click', () => realUpload.click());
-    realUpload.addEventListener('change', uploadImageFiles);
+    realUpload.addEventListener('change', displayAndUploadImage);
   </script>
 </body>
 
