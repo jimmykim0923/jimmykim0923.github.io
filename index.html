@@ -1,0 +1,46 @@
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .real-upload {
+      display: none;
+    }
+
+    .upload {
+      width: 200px;
+      height: 200px;
+      background-color: antiquewhite;
+    }
+  </style>
+</head>
+<input type="file" class="real-upload" accept="image/*" required multiple>
+<div class="upload"></div>
+<script>
+  function uploadImageFiles(e) {
+    const files = e.currentTarget.files;
+    const formData = new FormData();
+    
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]);
+    }
+
+    fetch('/upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Upload successful:', data);
+    })
+    .catch(error => {
+      console.error('Error during upload:', error);
+    });
+  }
+
+  const realUpload = document.querySelector('.real-upload');
+  realUpload.addEventListener('change', uploadImageFiles);
+</script>
